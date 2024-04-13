@@ -1,0 +1,6 @@
+pandas
+blobfile
+accelerate
+transformers
+diffusers
+pytorch==1.12.0

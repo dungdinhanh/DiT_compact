@@ -1,0 +1,32 @@
+runs/
+models/32x32_classifier.pt
+models/DiT-XL-2-256x256.pt
+# ide generated config
+.vscode
+.idea
+# git
+# python generated
+__pycache__
+*.py[cod]
+*$py.class
+# python package
+eggs/
+".eggs/"
+*.egg-info/
+*.egg
+wheels/
+share/python-wheels/
+visuals
+reference/VIRTUAL_imagenet256_labeled.npz
+README.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+environment.yml
+LICENSE.txt
+evaluations/classify_image_graph_def.pb
+classify_image_graph_def.pb
+models--stabilityai--sd-vae-ft-ema/
+models/IM_ls_clip.npz
+eval_models/
+reference/
+
