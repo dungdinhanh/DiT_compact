@@ -29,4 +29,6 @@ models--stabilityai--sd-vae-ft-ema/
 models/IM_ls_clip.npz
 eval_models/
 reference/
+DiTmodels
+
 

@@ -301,11 +301,11 @@ class DiTCompact(DiT):
         # print(guidance_steps)
         # exit(0)
         if guidance_steps[resp_timestep-1] > 0:
-            print(resp_timestep)
+            # print(resp_timestep)
             # print("get in guidance")
             combined = torch.cat([half, half], dim=0)
             model_out = self.forward(combined, t, y)
-            print(model_out.shape)
+            # print(model_out.shape)
             # For exact reproducibility reasons, we apply classifier-free guidance on only
             # three channels by default. The standard approach to cfg applies it to all channels.
             # This can be done by uncommenting the following line and commenting-out the line following that.
