@@ -91,10 +91,7 @@ def main(local_rank):
     ckpt_string_name = os.path.basename(args.ckpt).replace(".pt", "") if args.ckpt else "models"
     folder_name = f"{model_string_name}-{ckpt_string_name}-size-{args.image_size}-vae-{args.vae}-" \
                   f"cfg-{args.cfg_scale}-seed-{args.global_seed}"
-    output_folder_path = os.path.join(base_folder, args.sample_dir)
-    sample_folder_dir = os.path.join(output_folder_path, f"images")
-    reference_dir = os.path.join(output_folder_path, "reference")
-    os.makedirs(reference_dir, exist_ok=True)
+    sample_folder_dir = os.path.join(base_folder, args.sample_dir, f"images")
     if rank == 0:
         os.makedirs(sample_folder_dir, exist_ok=True)
         print(f"Saving .png samples at {sample_folder_dir}")
@@ -105,37 +102,11 @@ def main(local_rank):
     global_batch_size = n * dist.get_world_size()
     # To make things evenly-divisible, we'll sample a bit more than we need and then discard the extra samples:
     list_png_files, max_index = get_png_files(sample_folder_dir)
-
-    final_file = os.path.join(reference_dir,
-                              f"samples_{args.num_fid_samples}x{args.image_size}x{args.image_size}x3.npz")
-    if os.path.isfile(final_file):
-        dist.barrier()
-        print("Sampling complete")
-        dist.barrier()
-        dist.destroy_process_group()
-        return
-
-    checkpoint = os.path.join(sample_folder_dir, "last_samples.npz")
-
-    if os.path.isfile(checkpoint):
-        all_images = list(np.load(checkpoint)['arr_0'])
-    else:
-        all_images = []
-        all_images = compress_images_to_npz(sample_folder_dir, all_images)
-
-    no_png_files = len(all_images)
+    no_png_files = len(list_png_files)
     if no_png_files >= args.num_fid_samples:
         if rank == 0:
             print(f"Complete sampling {no_png_files} satisfying >= {args.num_fid_samples}")
-            # create_npz_from_sample_folder(os.path.join(base_folder, args.sample_dir), args.num_fid_samples, args.image_size)
-            arr = np.stack(all_images)
-            arr = arr[: args.num_fid_samples]
-            shape_str = "x".join([str(x) for x in arr.shape])
-            out_path = os.path.join(reference_dir, f"samples_{shape_str}.npz")
-            # logger.log(f"saving to {out_path}")
-            print(f"Saving to {out_path}")
-            np.savez(out_path, arr)
-            os.remove(checkpoint)
+            create_npz_from_sample_folder(os.path.join(base_folder, args.sample_dir), args.num_fid_samples, args.image_size)
             print("Done.")
         dist.barrier()
         dist.destroy_process_group()
@@ -166,7 +137,6 @@ def main(local_rank):
         guidance_timesteps = get_guidance_timesteps_with_weight(int(args.num_sampling_steps), skip)
 
 
-    current_samples = 0
     for _ in pbar:
         # Sample inputs:
         z = torch.randn(n, model.in_channels, latent_size, latent_size, device=device)
@@ -208,62 +178,15 @@ def main(local_rank):
             index = i * dist.get_world_size() + rank + total
             Image.fromarray(sample).save(f"{sample_folder_dir}/{index:06d}.png")
         total += global_batch_size
-        current_samples += global_batch_size
-        if current_samples >= 500 or total >= total_samples:
-            if rank == 0:
-                all_images = compress_images_to_npz(sample_folder_dir, all_images)
-            current_samples = 0
-            pass
-
-
 
 
     # Make sure all processes have finished saving their samples before attempting to convert to .npz
     dist.barrier()
     if rank == 0:
-        # create_npz_from_sample_folder(args.sample_dir, args.num_fid_samples)
-        print(f"Complete sampling {total} satisfying >= {args.num_fid_samples}")
-        # create_npz_from_sample_folder(os.path.join(base_folder, args.sample_dir), args.num_fid_samples, args.image_size)
-        arr = np.stack(all_images)
-        arr = arr[: args.num_fid_samples]
-        shape_str = "x".join([str(x) for x in arr.shape])
-        reference_dir = os.path.join(output_folder_path, "reference")
-        os.makedirs(reference_dir, exist_ok=True)
-        out_path = os.path.join(reference_dir, f"samples_{shape_str}.npz")
-        # logger.log(f"saving to {out_path}")
-        print(f"Saving to {out_path}")
-        np.savez(out_path, arr)
-        os.remove(checkpoint)
+        create_npz_from_sample_folder(args.sample_dir, args.num_fid_samples)
         print("Done.")
-        # print("Done.")
     dist.barrier()
     dist.destroy_process_group()
-
-
-def compress_images_to_npz(sample_folder_dir, all_images=[]):
-    npz_file = os.path.join(sample_folder_dir, "last_samples.npz")
-    list_png_files, _ = get_png_files(sample_folder_dir)
-    no_png_files = len(list_png_files)
-    if no_png_files <= 1:
-        return all_images
-    for i in range(no_png_files):
-        image_png_path = os.path.join(sample_folder_dir, f"{list_png_files[i]}")
-        try:
-            # image_png_path = os.path.join(images_dir, f"{list_png_files[i]}")
-            img = Image.open(image_png_path)
-            img.verify()
-        except(IOError, SyntaxError) as e:
-            print(f'Bad file {image_png_path}')
-            print(f'remove {image_png_path}')
-            os.remove(image_png_path)
-            continue
-        sample_pil = Image.open(os.path.join(image_png_path))
-        sample_np = np.asarray(sample_pil).astype(np.uint8)
-        all_images.append(sample_np)
-        os.remove(image_png_path)
-    np_all_images = np.stack(all_images)
-    np.savez(npz_file, arr_0=np_all_images)
-    return all_images
 
 def get_guidance_timesteps_linear(n=250, skip=5):
     # T = n - 1

@@ -27,7 +27,7 @@ basefolder="."
 for scale in "${scales[@]}"
 do
 cmd="python sample_compact_ddp_server.py $MODEL_FLAGS --cfg-scale ${scale}  $SAMPLE_FLAGS  \
- --sample-dir runs/DiTCompact/IMN256/scale${scale}/ --ckpt models/DiT-XL-2-256x256.pt --base_folder ${basefolder}"
+ --sample-dir runs/DiTCompact/IMN256/scale${scale}2/ --ckpt DiTmodels/DiT-XL-2-256x256.pt --base_folder ${basefolder}"
 echo ${cmd}
 eval ${cmd}
 done
@@ -36,7 +36,7 @@ done
 for scale in "${scales[@]}"
 do
 cmd="python evaluations/evaluator_tolog.py ${basefolder}/reference/VIRTUAL_imagenet256_labeled.npz \
- ${basefolder}/runs/DiTCompact/IMN256/scale${scale}/reference/samples_50000x256x256x3.npz"
+ ${basefolder}/runs/DiTCompact/IMN256/scale${scale}2/reference/samples_50000x256x256x3.npz"
 echo ${cmd}
 eval ${cmd}
 done
