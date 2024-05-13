@@ -29,6 +29,7 @@ import hfai
 from torch.utils import tensorboard
 # import hfai.client
 import time
+import time
 
 
 from utils.handling_files import *
@@ -83,7 +84,7 @@ def main(local_rank):
     diffusion = create_diffusion(str(args.num_sampling_steps))
     vae = AutoencoderKL.from_pretrained(f"stabilityai/sd-vae-ft-{args.vae}", cache_dir=base_folder).to(device)
     vae.decoder.eval()
-    assert args.cfg_scale >= 1.0, "In almost all cases, cfg_scale be >= 1.0"
+    # assert args.cfg_scale >= 1.0, "In almost all cases, cfg_scale be >= 1.0"
     using_cfg = args.cfg_scale > 1.0
 
     # Create folder to save samples:
@@ -167,6 +168,7 @@ def main(local_rank):
 
 
     current_samples = 0
+    current = time.time()
     for _ in pbar:
         # Sample inputs:
         z = torch.randn(n, model.in_channels, latent_size, latent_size, device=device)
@@ -204,39 +206,10 @@ def main(local_rank):
         dist.barrier()
 
         # Save samples to disk as individual .png files
-        for i, sample in enumerate(samples):
-            index = i * dist.get_world_size() + rank + total
-            Image.fromarray(sample).save(f"{sample_folder_dir}/{index:06d}.png")
-        total += global_batch_size
-        current_samples += global_batch_size
-        dist.barrier()
-        if current_samples >= 500 or total >= total_samples:
-            if rank == 0:
-                all_images = compress_images_to_npz(sample_folder_dir, all_images)
-            current_samples = 0
-            pass
+    end = time.time()
+    running_time = end - current
+    print(f"running time {running_time}")
 
-
-
-
-    # Make sure all processes have finished saving their samples before attempting to convert to .npz
-    dist.barrier()
-    if rank == 0:
-        # create_npz_from_sample_folder(args.sample_dir, args.num_fid_samples)
-        print(f"Complete sampling {total} satisfying >= {args.num_fid_samples}")
-        # create_npz_from_sample_folder(os.path.join(base_folder, args.sample_dir), args.num_fid_samples, args.image_size)
-        arr = np.stack(all_images)
-        arr = arr[: args.num_fid_samples]
-        shape_str = "x".join([str(x) for x in arr.shape])
-        reference_dir = os.path.join(output_folder_path, "reference")
-        os.makedirs(reference_dir, exist_ok=True)
-        out_path = os.path.join(reference_dir, f"samples_{shape_str}.npz")
-        # logger.log(f"saving to {out_path}")
-        print(f"Saving to {out_path}")
-        np.savez(out_path, arr)
-        os.remove(checkpoint)
-        print("Done.")
-        # print("Done.")
     dist.barrier()
     dist.destroy_process_group()
 
