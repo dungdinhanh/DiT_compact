@@ -155,7 +155,7 @@ def main(local_rank):
     iterations = int(samples_needed_this_gpu // n)
     pbar = range(iterations)
     pbar = tqdm(pbar) if rank == 0 else pbar
-    total = max_index
+    total = len(all_images)
 
     skip = args.skip
     skip_type = args.skip_type
