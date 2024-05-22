@@ -171,7 +171,7 @@ def main(local_rank):
         # Sample inputs:
         z = torch.randn(n, model.in_channels, latent_size, latent_size, device=device)
         if args.classf >= 0:
-            y = torch.ones((n, ), device=device) * args.classf
+            y = torch.ones((n, ), device=device, dtype=torch.int) * args.classf
         else:
             y = torch.randint(0, args.num_classes, (n,), device=device)
 
