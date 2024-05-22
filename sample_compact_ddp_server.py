@@ -170,7 +170,11 @@ def main(local_rank):
     for _ in pbar:
         # Sample inputs:
         z = torch.randn(n, model.in_channels, latent_size, latent_size, device=device)
-        y = torch.randint(0, args.num_classes, (n,), device=device)
+        if args.classf >= 0:
+            y = torch.ones((n, ), device=device) * args.classf
+        else:
+            y = torch.randint(0, args.num_classes, (n,), device=device)
+
 
         # Setup classifier-free guidance:
         if using_cfg:
@@ -327,6 +331,7 @@ def create_argparser():
     parser.add_argument("--base_folder", type=str, default="./")
     parser.add_argument("--skip_type", type=str, choices=["linear", "quadratic"], default="linear")
     parser.add_argument("--skip", type=int, default=5)
+    parser.add_argument("--classf", type=int, default=-1)
     return parser
 
 
