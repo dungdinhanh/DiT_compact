@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q gpuvolta
-#PBS -P pg44
+#PBS -P jp09
 #PBS -l walltime=48:00:00
 #PBS -l mem=80GB
 #PBS -l ncpus=48
@@ -10,7 +10,7 @@
 #PBS -l wd
 #PBS -l storage=scratch/zg12
 #PBS -M adin6536@uni.sydney.edu.au
-#PBS -o output_nci/compt_dit_sc6p0_sk7.txt
+#PBS -o output_nci/compt_dit_sc6p0_sk9.txt
 #PBS -e output_nci/compt_cond_quad_error1.txt
 
 
@@ -40,7 +40,7 @@ eval ${cmd}
 #scales=( "0.5" "1.0" "2.0" )
 scales=( "6.0" )
 basefolder="/scratch/zg12/dd9648/"
-skips=("7")
+skips=("9")
 
 
 

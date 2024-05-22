@@ -318,7 +318,7 @@ def create_argparser():
     parser.add_argument("--num-classes", type=int, default=1000)
     parser.add_argument("--cfg-scale", type=float, default=1.5)
     parser.add_argument("--num-sampling-steps", type=int, default=250)
-    parser.add_argument("--global-seed", type=int, default=0)
+    parser.add_argument("--global-seed", type=int, default=2333)
     parser.add_argument("--tf32", action='store_true', default=True,
                         help="By default, use TF32 matmuls. This massively accelerates sampling on Ampere GPUs.")
     parser.add_argument("--ckpt", type=str, default=None,

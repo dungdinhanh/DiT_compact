@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #PBS -q gpuvolta
-#PBS -P pg44
+#PBS -P zg12
 #PBS -l walltime=48:00:00
 #PBS -l mem=80GB
 #PBS -l ncpus=48

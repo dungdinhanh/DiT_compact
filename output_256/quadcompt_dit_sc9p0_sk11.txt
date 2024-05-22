@@ -1,0 +1,65 @@
+ls
+__pycache__
+classify_image_graph_def.pb
+diffusion
+download.py
+errors
+evaluations
+models.py
+models_compact.py
+models_ss.py
+models_ss_norm.py
+noise_classifier
+output_256
+output_nci
+requirements.txt
+run_DiT.ipynb
+sample.py
+sample_compact_ddp_local.py
+sample_compact_ddp_server.py
+sample_ddp.py
+sample_ddp_hfai.py
+sample_ddp_server.py
+scripts
+scripts_nci
+train.py
+utils
+WORLD_SIZE=1 RANK=0 MASTER_IP=127.0.0.1 MASTER_PORT=29510 MARSV2_WHOLE_LIFE_STATE=0 python3 sample_compact_ddp_server.py --cfg-scale 9.0 --num-fid-samples 50000 --per-proc-batch-size 40 --sample-dir runsDiT/DiTCompactQuad/IMN256/scale9.0_sk11/ --ckpt DiTmodels/DiT-XL-2-256x256.pt --base_folder /scratch/zg12/dd9648/ --skip 11 --skip_type quadratic
+Starting rank=0, random seed, world_size=4.
+Saving .png samples at /scratch/zg12/dd9648/runsDiT/DiTCompactQuad/IMN256/scale9.0_sk11/images
+continue sampling
+Already sampled 0
+Total number of images that will be sampled: 50080
+Starting rank=2, random seed, world_size=4.
+Starting rank=1, random seed, world_size=4.
+Starting rank=3, random seed, world_size=4.
+Complete sampling 50081 satisfying >= 50000
+Saving to /scratch/zg12/dd9648/runsDiT/DiTCompactQuad/IMN256/scale9.0_sk11/reference/samples_50000x256x256x3.npz
+Done.
+python3 evaluations/evaluator_tolog.py /scratch/zg12/dd9648//reference/VIRTUAL_imagenet256_labeled.npz /scratch/zg12/dd9648//runsDiT/DiTCompactQuad/IMN256/scale9.0_sk11/reference/samples_50000x256x256x3.npz
+warming up TensorFlow...
+computing reference batch activations...
+computing/reading reference batch statistics...
+computing sample batch activations...
+computing/reading sample batch statistics...
+Computing evaluations...
+Inception Score: 265.76605224609375
+FID: 2.3896926667028424
+sFID: 4.789865231386216
+Precision: 0.81962
+Recall: 0.5788
+
+======================================================================================
+                  Resource Usage on 2024-05-03 13:51:45:
+   Job Id:             114794692.gadi-pbs
+   Project:            pg44
+   Exit Status:        0
+   Service Units:      2999.28
+   NCPUs Requested:    48                     NCPUs Used: 48              
+                                           CPU Time Used: 83:02:27        
+   Memory Requested:   80.0GB                Memory Used: 58.62GB         
+   NGPUs Requested:    4                 GPU Utilisation: 42%             
+                                         GPU Memory Used: 9.72GB          
+   Walltime requested: 48:00:00            Walltime Used: 20:49:42        
+   JobFS requested:    128.0GB                JobFS used: 0B              
+======================================================================================

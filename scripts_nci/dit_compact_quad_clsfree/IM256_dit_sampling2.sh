@@ -10,8 +10,8 @@
 #PBS -l wd
 #PBS -l storage=scratch/zg12
 #PBS -M adin6536@uni.sydney.edu.au
-#PBS -o output_nci/compt_dit_sc6p0_sk7.txt
-#PBS -e output_nci/compt_cond_quad_error1.txt
+#PBS -o output_256/quadcompt_dit_sc6p0_sk12.txt
+#PBS -e errors/quadcompt_cond_quad_error1.txt
 
 
 module load use.own
@@ -40,7 +40,7 @@ eval ${cmd}
 #scales=( "0.5" "1.0" "2.0" )
 scales=( "6.0" )
 basefolder="/scratch/zg12/dd9648/"
-skips=("7")
+skips=("12")
 
 
 
@@ -49,7 +49,7 @@ do
   for skip in "${skips[@]}"
   do
 cmd="WORLD_SIZE=1 RANK=0 MASTER_IP=127.0.0.1 MASTER_PORT=29510 MARSV2_WHOLE_LIFE_STATE=0 python3  sample_compact_ddp_server.py $MODEL_FLAGS --cfg-scale ${scale}  $SAMPLE_FLAGS  \
- --sample-dir runsDiT/DiTCompact/IMN256/scale${scale}_sk${skip}/ --ckpt DiTmodels/DiT-XL-2-256x256.pt --base_folder ${basefolder} --skip ${skip} --skip_type linear"
+ --sample-dir runsDiT/DiTCompactQuad/IMN256/scale${scale}_sk${skip}/ --ckpt DiTmodels/DiT-XL-2-256x256.pt --base_folder ${basefolder} --skip ${skip} --skip_type quadratic"
 echo ${cmd}
 eval ${cmd}
 done
@@ -59,7 +59,7 @@ done
 for scale in "${scales[@]}"
 do
 cmd="python3 evaluations/evaluator_tolog.py ${basefolder}/reference/VIRTUAL_imagenet256_labeled.npz \
- ${basefolder}/runsDiT/DiTCompact/IMN256/scale${scale}_sk${skip}/reference/samples_50000x256x256x3.npz"
+ ${basefolder}/runsDiT/DiTCompactQuad/IMN256/scale${scale}_sk${skip}/reference/samples_50000x256x256x3.npz"
 echo ${cmd}
 eval ${cmd}
 done

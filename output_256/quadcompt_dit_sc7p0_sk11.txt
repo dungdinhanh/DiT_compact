@@ -1,0 +1,66 @@
+ls
+__pycache__
+classify_image_graph_def.pb
+diffusion
+download.py
+errors
+evaluations
+models.py
+models_compact.py
+models_ss.py
+models_ss_norm.py
+noise_classifier
+output_nci
+requirements.txt
+run_DiT.ipynb
+sample.py
+sample_compact_ddp_local.py
+sample_compact_ddp_server.py
+sample_ddp.py
+sample_ddp_hfai.py
+sample_ddp_server.py
+scripts
+scripts_nci
+train.py
+utils
+WORLD_SIZE=1 RANK=0 MASTER_IP=127.0.0.1 MASTER_PORT=29510 MARSV2_WHOLE_LIFE_STATE=0 python3 sample_compact_ddp_server.py --cfg-scale 7.0 --num-fid-samples 50000 --per-proc-batch-size 40 --sample-dir runsDiT/DiTCompactQuad/IMN256/scale7.0_sk11/ --ckpt DiTmodels/DiT-XL-2-256x256.pt --base_folder /scratch/zg12/dd9648/ --skip 11 --skip_type quadratic
+Starting rank=0, random seed, world_size=4.
+Saving .png samples at /scratch/zg12/dd9648/runsDiT/DiTCompactQuad/IMN256/scale7.0_sk11/images
+continue sampling
+Already sampled 0
+Total number of images that will be sampled: 50080
+Starting rank=3, random seed, world_size=4.
+Starting rank=2, random seed, world_size=4.
+Starting rank=1, random seed, world_size=4.
+Bad file /scratch/zg12/dd9648/runsDiT/DiTCompactQuad/IMN256/scale7.0_sk11/images/033278.png
+remove /scratch/zg12/dd9648/runsDiT/DiTCompactQuad/IMN256/scale7.0_sk11/images/033278.png
+Complete sampling 50081 satisfying >= 50000
+Saving to /scratch/zg12/dd9648/runsDiT/DiTCompactQuad/IMN256/scale7.0_sk11/reference/samples_50000x256x256x3.npz
+Done.
+python3 evaluations/evaluator_tolog.py /scratch/zg12/dd9648//reference/VIRTUAL_imagenet256_labeled.npz /scratch/zg12/dd9648//runsDiT/DiTCompactQuad/IMN256/scale7.0_sk11/reference/samples_50000x256x256x3.npz
+warming up TensorFlow...
+computing reference batch activations...
+computing/reading reference batch statistics...
+computing sample batch activations...
+computing/reading sample batch statistics...
+Computing evaluations...
+Inception Score: 234.66995239257812
+FID: 2.5070477609278896
+sFID: 4.9282682778134586
+Precision: 0.79652
+Recall: 0.5995
+
+======================================================================================
+                  Resource Usage on 2024-04-29 19:44:35:
+   Job Id:             114683928.gadi-pbs
+   Project:            pg44
+   Exit Status:        0
+   Service Units:      2960.00
+   NCPUs Requested:    48                     NCPUs Used: 48              
+                                           CPU Time Used: 82:02:30        
+   Memory Requested:   80.0GB                Memory Used: 54.57GB         
+   NGPUs Requested:    4                 GPU Utilisation: 43%             
+                                         GPU Memory Used: 9.72GB          
+   Walltime requested: 48:00:00            Walltime Used: 20:33:20        
+   JobFS requested:    128.0GB                JobFS used: 0B              
+======================================================================================
