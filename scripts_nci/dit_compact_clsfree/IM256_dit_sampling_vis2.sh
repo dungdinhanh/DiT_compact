@@ -38,7 +38,7 @@ echo ${cmd}
 eval ${cmd}
 
 #scales=( "0.5" "1.0" "2.0" )
-classes=("1" "218" "263" "264" "281" )
+classes=("282" "353" "277" "278" "279")
 scales=( "1.5" "2.0" "4.0" "7.0")
 basefolder="/scratch/zg12/dd9648/"
 skips=("1" )
@@ -51,7 +51,7 @@ do
   do
     for class in "${classes[@]}"
     do
-cmd="WORLD_SIZE=1 RANK=0 MASTER_IP=127.0.0.1 MASTER_PORT=29510 MARSV2_WHOLE_LIFE_STATE=0 python3  sample_compact_ddp_server.py $MODEL_FLAGS --cfg-scale ${scale}  $SAMPLE_FLAGS --classf ${class} \
+cmd="WORLD_SIZE=1 RANK=0 MASTER_IP=127.0.0.1 MASTER_PORT=29510 MARSV2_WHOLE_LIFE_STATE=0 python3  sample_compact_ddp_server.py $MODEL_FLAGS --cfg-scale ${scale}  $SAMPLE_FLAGS  --classf ${class}\
  --sample-dir runsDiT/DiTCompactVis/normal/IMN256/class${class}/scale${scale}_sk${skip}/ --ckpt DiTmodels/DiT-XL-2-256x256.pt --base_folder ${basefolder} --skip ${skip} --skip_type linear --fix_seed"
 echo ${cmd}
 eval ${cmd}
@@ -78,7 +78,7 @@ done
 #done
 #done
 #done
-
+#
 
 #for scale in "${scales[@]}"
 #do
